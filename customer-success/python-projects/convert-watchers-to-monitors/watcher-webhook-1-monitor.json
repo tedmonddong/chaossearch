@@ -1,0 +1,122 @@
+{
+   "type": "monitor",
+   "name": "watcher-webhook-1-monitor",
+   "enabled": true,
+   "schedule": {
+      "period": {
+         "interval": 30,
+         "unit": "MINUTES"
+      }
+   },
+   "inputs": [
+      {
+         "search": {
+            "indices": [
+               "kibana_sample_data_logs"
+            ],
+            "query": {
+               "size": 0,
+               "query": {
+                  "bool": {
+                     "filter": [
+                        {
+                           "range": {
+                              "timestamp": {
+                                 "from": "{{period_end}}||-5m",
+                                 "to": "{{period_end}}",
+                                 "include_lower": true,
+                                 "include_upper": true,
+                                 "format": "epoch_millis",
+                                 "boost": 1
+                              }
+                           }
+                        }
+                     ],
+                     "adjust_pure_negative": true,
+                     "boost": 1
+                  }
+               },
+               "aggregations": {}
+            }
+         }
+      }
+   ],
+   "triggers": [
+      {
+         "name": "watcher-webhook-1-monitor-trigger",
+         "severity": "1",
+         "condition": {
+            "script": {
+               "lang": "painless",
+               "source": "ctx.results[0].hits.total.value > 1000"
+            }
+         },
+         "actions": [
+            {
+               "name": "webhook_1",
+               "destination_id": "WyJkZXN0Iiwid2F0Y2hlci13ZWJob29rLTEtd2ViaG9va18xLWRlc3RpbmF0aW9uIl0",
+               "subject_template": {
+                  "lang": "mustache",
+                  "source": "{{subject}}"
+               },
+               "message_template": {
+                  "lang": "mustache",
+                  "source": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"
+               },
+               "throttle_enabled": false
+            }
+         ],
+         "min_time_between_executions": null,
+         "rolling_window_size": null
+      }
+   ],
+   "ui_metadata": {
+      "schedule": {
+         "cronExpression": "0 */1 * * *",
+         "period": {
+            "unit": "MINUTES",
+            "interval": 30
+         },
+         "timezone": null,
+         "daily": 0,
+         "monthly": {
+            "type": "day",
+            "day": 1
+         },
+         "weekly": {
+            "tue": false,
+            "wed": false,
+            "thur": false,
+            "sat": false,
+            "fri": false,
+            "mon": false,
+            "sun": false
+         },
+         "frequency": "interval"
+      },
+      "search": {
+         "aggregationType": "count",
+         "fieldName": "",
+         "overDocuments": "all documents",
+         "searchType": "graph",
+         "bucketValue": 5,
+         "timeField": "timestamp",
+         "groupedOverTop": 5,
+         "groupedOverFieldName": "",
+         "bucketUnitOfTime": "m",
+         "where": {
+            "fieldName": [],
+            "fieldRangeEnd": 0,
+            "fieldRangeStart": 0,
+            "fieldValue": "",
+            "operator": "is"
+         }
+      },
+      "triggers": {
+         "watcher-webhook-1-monitor-trigger": {
+            "value": 1000,
+            "enum": "ABOVE"
+         }
+      }
+   }
+}

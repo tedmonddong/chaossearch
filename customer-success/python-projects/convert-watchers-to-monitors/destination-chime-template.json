@@ -1,0 +1,7 @@
+{
+   "name":"destination-chime",
+   "type":"chime",
+   "chime":{
+      "url":"https://chime.amazon.com/someurl"
+   }
+}

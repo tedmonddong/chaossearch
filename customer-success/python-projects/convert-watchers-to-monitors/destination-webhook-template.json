@@ -1,0 +1,18 @@
+{
+   "name":"{{webhook_name}}",
+   "type":"custom_webhook",
+   "custom_webhook":{
+      "scheme":"{{webhook_scheme}}",
+      "method":"{{webhook_method}}",
+      "url":"",
+      "host":"{{webhook_host}}",
+      "port":{{webhook_port}},
+      "path":"{{webhook_path}}",
+      "header_params":{
+         "Content-Type":"application/json"
+      },
+      "query_params":{
+         "":""
+      }
+   }
+}

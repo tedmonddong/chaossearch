@@ -1,0 +1,13 @@
+{
+   "name":"{{action_name}}",
+   "destination_id":"{{destination_id}}",
+   "subject_template":{
+      "lang":"mustache",
+      "source":"{{subject}}"
+   },
+   "message_template":{
+      "lang":"mustache",
+      "source":"{{message}}"
+   },
+   "throttle_enabled":false
+}

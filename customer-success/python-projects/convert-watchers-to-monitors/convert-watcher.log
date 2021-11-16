@@ -1,0 +1,189 @@
+2021-11-15 09:30:08,748: Starting main
+2021-11-15 09:30:08,749: arguments: Namespace(monitor_api_url='https://lab.chaossearch.io/kibana/api/alerting/monitors', destination_api_url='https://lab.chaossearch.io/kibana/api/alerting/destinations', cs_route_token='52c1bb5a-553c-4987-a2d9-d3b2f6c49769', cs_security_token=None, cs_jwt_token_url='https://lab.chaossearch.io/User/login', cs_creds_file='/Users/teddong/Downloads/creds.json', api=True, export_watchers_to_file=True)
+2021-11-15 09:30:09,465: cs jwt token response code: 200
+2021-11-15 09:30:09,465: cs jwt token api response: {"Token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTZWNyZXRBY2Nlc3NLZXkiOiJHVXU1ME92VWVOZnJhSk5ueFVFdTNCa1NxWFdHTFBwSHd0RVJGM2wvIiwiZXBvY2giOjE2MzYxMzMzOTM5OTAsImV4dGVybmFsX2lkIjoiNTJjMWJiNWEtNTUzYy00OTg3LWEyZDktZDNiMmY2YzQ5NzY5IiwiQ1NSb2xlIjoidXNlciIsIndvcmtlci1xdW90YV91cy1lYXN0LTEiOjMwLCJhd3NfYWNjb3VudF9pZCI6IjIyNzk2MDIzNjcxNyIsIlVzZXJuYW1lIjoicXVlcnlfc2VydmljZV9hY2NvdW50IiwiQWNjZXNzS2V5SWQiOiJDRVBXQ1ZRRFNITjFCV1RRMFlNQSIsIlNlcnZpY2VUeXBlIjoiUHJlbWl1bSIsIkxvZ2luRGlzY3JpbWluYXRvciI6IjFkNWExMTRmLTRkNWMtNDRjOC1iNjJlLTMwZTM1MzA1ZmZlNyIsIm5hbWUiOiJxdWVyeV9zZXJ2aWNlX2FjY291bnQiLCJQcmltYXJ5VXNlciI6ImxhYkBjaGFvc3NlYXJjaC5jb20iLCJMb2dpblR5cGUiOiJhbGlhcyIsImV4cCI6MTYzNzA4MzgwOSwiaWF0IjoxNjM2OTk3NDA5LCJlbWFpbCI6InF1ZXJ5X3NlcnZpY2VfYWNjb3VudCIsImp0aSI6IjgxMzY5OWEyLWI5OWYtNGY2OS04MjU4LWFkM2FjYzI4YjZiZCJ9.JoKlps8n63H8u9GMvaxy2K-VideepPqm9MlPGdAtjQ8"}
+2021-11-15 09:30:09,465: security token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTZWNyZXRBY2Nlc3NLZXkiOiJHVXU1ME92VWVOZnJhSk5ueFVFdTNCa1NxWFdHTFBwSHd0RVJGM2wvIiwiZXBvY2giOjE2MzYxMzMzOTM5OTAsImV4dGVybmFsX2lkIjoiNTJjMWJiNWEtNTUzYy00OTg3LWEyZDktZDNiMmY2YzQ5NzY5IiwiQ1NSb2xlIjoidXNlciIsIndvcmtlci1xdW90YV91cy1lYXN0LTEiOjMwLCJhd3NfYWNjb3VudF9pZCI6IjIyNzk2MDIzNjcxNyIsIlVzZXJuYW1lIjoicXVlcnlfc2VydmljZV9hY2NvdW50IiwiQWNjZXNzS2V5SWQiOiJDRVBXQ1ZRRFNITjFCV1RRMFlNQSIsIlNlcnZpY2VUeXBlIjoiUHJlbWl1bSIsIkxvZ2luRGlzY3JpbWluYXRvciI6IjFkNWExMTRmLTRkNWMtNDRjOC1iNjJlLTMwZTM1MzA1ZmZlNyIsIm5hbWUiOiJxdWVyeV9zZXJ2aWNlX2FjY291bnQiLCJQcmltYXJ5VXNlciI6ImxhYkBjaGFvc3NlYXJjaC5jb20iLCJMb2dpblR5cGUiOiJhbGlhcyIsImV4cCI6MTYzNzA4MzgwOSwiaWF0IjoxNjM2OTk3NDA5LCJlbWFpbCI6InF1ZXJ5X3NlcnZpY2VfYWNjb3VudCIsImp0aSI6IjgxMzY5OWEyLWI5OWYtNGY2OS04MjU4LWFkM2FjYzI4YjZiZCJ9.JoKlps8n63H8u9GMvaxy2K-VideepPqm9MlPGdAtjQ8
+2021-11-15 09:30:09,479: GET http://localhost:9200/ [status:200 request:0.013s]
+2021-11-15 09:30:09,491: POST http://localhost:9200/.watches/_search [status:200 request:0.010s]
+2021-11-15 09:30:09,491: Elasticsearch response: {'took': 7, 'timed_out': False, '_shards': {'total': 1, 'successful': 1, 'skipped': 0, 'failed': 0}, 'hits': {'total': {'value': 1, 'relation': 'eq'}, 'max_score': 1.0, 'hits': [{'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:05:24.095Z', 'execution_state': 'execution_not_needed'}}}]}}
+2021-11-15 09:30:09,491: hits: [{'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:05:24.095Z', 'execution_state': 'execution_not_needed'}}}]
+2021-11-15 09:30:09,491: hit: {'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:05:24.095Z', 'execution_state': 'execution_not_needed'}}}
+2021-11-15 09:30:09,491: Exporting original ES json file: watcher-webhook-1.json
+2021-11-15 09:30:09,492: Extracting data from ES json:
+2021-11-15 09:30:09,492:    monitor_name: watcher-webhook-1-monitor
+2021-11-15 09:30:09,492:    interval: 30m
+2021-11-15 09:30:09,493:    match_dict: {'interval': '30', 'unit': 'm'}
+2021-11-15 09:30:09,493:    interval_value: 30
+2021-11-15 09:30:09,493:    interval_unit: m
+2021-11-15 09:30:09,493:    interval_unit_name: MINUTES
+2021-11-15 09:30:09,493:    indices: ['kibana_sample_data_logs']
+2021-11-15 09:30:09,493:    size: 0
+2021-11-15 09:30:09,493:    timestamp_field: timestamp
+2021-11-15 09:30:09,493:    timestamp_gte: {{ctx.trigger.scheduled_time}}||-5m
+2021-11-15 09:30:09,493:    timestamp_from: {{period_end}}||-5m
+2021-11-15 09:30:09,493:    timestamp_lte: {{ctx.trigger.scheduled_time}}
+2021-11-15 09:30:09,493:    timestamp_to: {{period_end}}
+2021-11-15 09:30:09,493:    trigger_name: watcher-webhook-1-monitor-trigger
+2021-11-15 09:30:09,493:    trigger_source: if (ctx.payload.hits.total > params.threshold) { return true; } return false;
+2021-11-15 09:30:09,493:    match_dict: {'source': 'ctx.payload.hits.total > params.threshold'}
+2021-11-15 09:30:09,493:    source: ctx.payload.hits.total > params.threshold
+2021-11-15 09:30:09,493:    source_split: ['ctx.payload.hits.total', '>', 'params.threshold']
+2021-11-15 09:30:09,494:    trigger_enum: ABOVE
+2021-11-15 09:30:09,494:    trigger_threshold: 1000
+2021-11-15 09:30:09,494:    source_conv: ctx.results[0].hits.total.value > 1000
+2021-11-15 09:30:09,494:    aggregation_type: count
+2021-11-15 09:30:09,494:    time_field: timestamp
+2021-11-15 09:30:09,494:    bucket_value: 5
+2021-11-15 09:30:09,494:    bucket_uot: m
+2021-11-15 09:30:09,494:    field_name: 
+2021-11-15 09:30:09,494:    term_size: 5
+2021-11-15 09:30:09,494:    term_field: 
+2021-11-15 09:30:09,495:    action: webhook_1
+2021-11-15 09:30:09,495:       webhook_schema: http
+2021-11-15 09:30:09,495:       webhook_host: somehost.com
+2021-11-15 09:30:09,495:       webhook_port: 99
+2021-11-15 09:30:09,495:       webhook_method: post
+2021-11-15 09:30:09,495:       webhook_path: myalert
+2021-11-15 09:32:32,638: Starting main
+2021-11-15 09:32:32,639: arguments: Namespace(monitor_api_url='https://lab.chaossearch.io/kibana/api/alerting/monitors', destination_api_url='https://lab.chaossearch.io/kibana/api/alerting/destinations', cs_route_token='52c1bb5a-553c-4987-a2d9-d3b2f6c49769', cs_security_token=None, cs_jwt_token_url='https://lab.chaossearch.io/User/login', cs_creds_file='/Users/teddong/Downloads/creds.json', api=True, export_watchers_to_file=True)
+2021-11-15 09:32:33,433: cs jwt token response code: 200
+2021-11-15 09:32:33,433: cs jwt token api response: {"Token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTZWNyZXRBY2Nlc3NLZXkiOiJqVjBvZlZ2R2pFR3kvL0MrK0xpTXdzRnZXL2xBeEZvWlJFUlpvRW9ZIiwiZXBvY2giOjE2MzYxMzMzOTM5OTAsImV4dGVybmFsX2lkIjoiNTJjMWJiNWEtNTUzYy00OTg3LWEyZDktZDNiMmY2YzQ5NzY5IiwiQ1NSb2xlIjoidXNlciIsIndvcmtlci1xdW90YV91cy1lYXN0LTEiOjMwLCJhd3NfYWNjb3VudF9pZCI6IjIyNzk2MDIzNjcxNyIsIlVzZXJuYW1lIjoicXVlcnlfc2VydmljZV9hY2NvdW50IiwiQWNjZXNzS2V5SWQiOiJYWktCWkhVU0ZXSFNDVFI0R0lWTiIsIlNlcnZpY2VUeXBlIjoiUHJlbWl1bSIsIkxvZ2luRGlzY3JpbWluYXRvciI6IjFiNTQxYzIwLTY3OGMtNDkzNi1hMGUzLWM2ZjZmMGM3NjYwZCIsIm5hbWUiOiJxdWVyeV9zZXJ2aWNlX2FjY291bnQiLCJQcmltYXJ5VXNlciI6ImxhYkBjaGFvc3NlYXJjaC5jb20iLCJMb2dpblR5cGUiOiJhbGlhcyIsImV4cCI6MTYzNzA4Mzk1MywiaWF0IjoxNjM2OTk3NTUzLCJlbWFpbCI6InF1ZXJ5X3NlcnZpY2VfYWNjb3VudCIsImp0aSI6IjNlODcwZDM2LTA2OGItNDVjZS1hOWNiLWU5MzJhOTczZmI2MiJ9.ZjesPd9n-kuMGrxlNeSOMpFUaZejNBFHoA6BBm-Hoc0"}
+2021-11-15 09:32:33,433: security token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTZWNyZXRBY2Nlc3NLZXkiOiJqVjBvZlZ2R2pFR3kvL0MrK0xpTXdzRnZXL2xBeEZvWlJFUlpvRW9ZIiwiZXBvY2giOjE2MzYxMzMzOTM5OTAsImV4dGVybmFsX2lkIjoiNTJjMWJiNWEtNTUzYy00OTg3LWEyZDktZDNiMmY2YzQ5NzY5IiwiQ1NSb2xlIjoidXNlciIsIndvcmtlci1xdW90YV91cy1lYXN0LTEiOjMwLCJhd3NfYWNjb3VudF9pZCI6IjIyNzk2MDIzNjcxNyIsIlVzZXJuYW1lIjoicXVlcnlfc2VydmljZV9hY2NvdW50IiwiQWNjZXNzS2V5SWQiOiJYWktCWkhVU0ZXSFNDVFI0R0lWTiIsIlNlcnZpY2VUeXBlIjoiUHJlbWl1bSIsIkxvZ2luRGlzY3JpbWluYXRvciI6IjFiNTQxYzIwLTY3OGMtNDkzNi1hMGUzLWM2ZjZmMGM3NjYwZCIsIm5hbWUiOiJxdWVyeV9zZXJ2aWNlX2FjY291bnQiLCJQcmltYXJ5VXNlciI6ImxhYkBjaGFvc3NlYXJjaC5jb20iLCJMb2dpblR5cGUiOiJhbGlhcyIsImV4cCI6MTYzNzA4Mzk1MywiaWF0IjoxNjM2OTk3NTUzLCJlbWFpbCI6InF1ZXJ5X3NlcnZpY2VfYWNjb3VudCIsImp0aSI6IjNlODcwZDM2LTA2OGItNDVjZS1hOWNiLWU5MzJhOTczZmI2MiJ9.ZjesPd9n-kuMGrxlNeSOMpFUaZejNBFHoA6BBm-Hoc0
+2021-11-15 09:32:33,442: GET http://localhost:9200/ [status:200 request:0.008s]
+2021-11-15 09:32:33,446: POST http://localhost:9200/.watches/_search [status:200 request:0.004s]
+2021-11-15 09:32:33,447: Elasticsearch response: {'took': 1, 'timed_out': False, '_shards': {'total': 1, 'successful': 1, 'skipped': 0, 'failed': 0}, 'hits': {'total': {'value': 1, 'relation': 'eq'}, 'max_score': 1.0, 'hits': [{'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:05:24.095Z', 'execution_state': 'execution_not_needed'}}}]}}
+2021-11-15 09:32:33,447: hits: [{'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:05:24.095Z', 'execution_state': 'execution_not_needed'}}}]
+2021-11-15 09:32:33,447: hit: {'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:05:24.095Z', 'execution_state': 'execution_not_needed'}}}
+2021-11-15 09:32:33,447: Exporting original ES json file: watcher-webhook-1.json
+2021-11-15 09:32:33,448: Extracting data from ES json:
+2021-11-15 09:32:33,448:    monitor_name: watcher-webhook-1-monitor
+2021-11-15 09:32:33,448:    interval: 30m
+2021-11-15 09:32:33,448:    match_dict: {'interval': '30', 'unit': 'm'}
+2021-11-15 09:32:33,448:    interval_value: 30
+2021-11-15 09:32:33,448:    interval_unit: m
+2021-11-15 09:32:33,448:    interval_unit_name: MINUTES
+2021-11-15 09:32:33,448:    indices: ['kibana_sample_data_logs']
+2021-11-15 09:32:33,448:    size: 0
+2021-11-15 09:32:33,448:    timestamp_field: timestamp
+2021-11-15 09:32:33,448:    timestamp_gte: {{ctx.trigger.scheduled_time}}||-5m
+2021-11-15 09:32:33,448:    timestamp_from: {{period_end}}||-5m
+2021-11-15 09:32:33,448:    timestamp_lte: {{ctx.trigger.scheduled_time}}
+2021-11-15 09:32:33,448:    timestamp_to: {{period_end}}
+2021-11-15 09:32:33,448:    trigger_name: watcher-webhook-1-monitor-trigger
+2021-11-15 09:32:33,448:    trigger_source: if (ctx.payload.hits.total > params.threshold) { return true; } return false;
+2021-11-15 09:32:33,449:    match_dict: {'source': 'ctx.payload.hits.total > params.threshold'}
+2021-11-15 09:32:33,449:    source: ctx.payload.hits.total > params.threshold
+2021-11-15 09:32:33,449:    source_split: ['ctx.payload.hits.total', '>', 'params.threshold']
+2021-11-15 09:32:33,449:    trigger_enum: ABOVE
+2021-11-15 09:32:33,449:    trigger_threshold: 1000
+2021-11-15 09:32:33,449:    source_conv: ctx.results[0].hits.total.value > 1000
+2021-11-15 09:32:33,449:    aggregation_type: count
+2021-11-15 09:32:33,449:    time_field: timestamp
+2021-11-15 09:32:33,449:    bucket_value: 5
+2021-11-15 09:32:33,449:    bucket_uot: m
+2021-11-15 09:32:33,449:    field_name: 
+2021-11-15 09:32:33,449:    term_size: 5
+2021-11-15 09:32:33,449:    term_field: 
+2021-11-15 09:32:33,449:    action: webhook_1
+2021-11-15 09:32:33,449:       webhook_schema: http
+2021-11-15 09:32:33,449:       webhook_host: somehost.com
+2021-11-15 09:32:33,449:       webhook_port: 99
+2021-11-15 09:32:33,450:       webhook_method: post
+2021-11-15 09:32:33,450:       webhook_path: myalert
+2021-11-15 09:32:33,450:       webhook_body: {
+  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"
+}
+2021-11-15 09:32:33,451:       Saving destination json file: watcher-webhook-1-webhook_1-destination.json
+2021-11-15 09:32:33,451:    Execute api call to create the new destination
+2021-11-15 09:32:33,856:    destination api response code: 200
+2021-11-15 09:32:33,856:    destination api response: {"id":"WyJkZXN0Iiwid2F0Y2hlci13ZWJob29rLTEtd2ViaG9va18xLWRlc3RpbmF0aW9uIl0","ok":true,"version":1}
+2021-11-15 09:32:33,856:    destination id: WyJkZXN0Iiwid2F0Y2hlci13ZWJob29rLTEtd2ViaG9va18xLWRlc3RpbmF0aW9uIl0
+2021-11-15 09:32:33,856:    action_json: {
+   "name":"webhook_1",
+   "destination_id":"WyJkZXN0Iiwid2F0Y2hlci13ZWJob29rLTEtd2ViaG9va18xLWRlc3RpbmF0aW9uIl0",
+   "subject_template":{
+      "lang":"mustache",
+      "source":"{{subject}}"
+   },
+   "message_template":{
+      "lang":"mustache",
+      "source":"{
+  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"
+}"
+   },
+   "throttle_enabled":false
+}
+2021-11-15 09:35:42,756: Starting main
+2021-11-15 09:35:42,757: arguments: Namespace(monitor_api_url='https://lab.chaossearch.io/kibana/api/alerting/monitors', destination_api_url='https://lab.chaossearch.io/kibana/api/alerting/destinations', cs_route_token='52c1bb5a-553c-4987-a2d9-d3b2f6c49769', cs_security_token=None, cs_jwt_token_url='https://lab.chaossearch.io/User/login', cs_creds_file='/Users/teddong/Downloads/creds.json', api=True, export_watchers_to_file=True)
+2021-11-15 09:35:43,444: cs jwt token response code: 200
+2021-11-15 09:35:43,444: cs jwt token api response: {"Token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTZWNyZXRBY2Nlc3NLZXkiOiJWNFB2c2gyQ25LSVdkczBhTFJZNitjZVNDenpIRVJMcVdMSGVNV2Z3IiwiZXBvY2giOjE2MzYxMzMzOTM5OTAsImV4dGVybmFsX2lkIjoiNTJjMWJiNWEtNTUzYy00OTg3LWEyZDktZDNiMmY2YzQ5NzY5IiwiQ1NSb2xlIjoidXNlciIsIndvcmtlci1xdW90YV91cy1lYXN0LTEiOjMwLCJhd3NfYWNjb3VudF9pZCI6IjIyNzk2MDIzNjcxNyIsIlVzZXJuYW1lIjoicXVlcnlfc2VydmljZV9hY2NvdW50IiwiQWNjZXNzS2V5SWQiOiJZQldENldOVUU0REJIRE02S09KSiIsIlNlcnZpY2VUeXBlIjoiUHJlbWl1bSIsIkxvZ2luRGlzY3JpbWluYXRvciI6IjBjZmZhNzdmLTRhYjctNDIxNi04ZDZkLTk0M2I1YWNmNTEwMSIsIm5hbWUiOiJxdWVyeV9zZXJ2aWNlX2FjY291bnQiLCJQcmltYXJ5VXNlciI6ImxhYkBjaGFvc3NlYXJjaC5jb20iLCJMb2dpblR5cGUiOiJhbGlhcyIsImV4cCI6MTYzNzA4NDE0MywiaWF0IjoxNjM2OTk3NzQzLCJlbWFpbCI6InF1ZXJ5X3NlcnZpY2VfYWNjb3VudCIsImp0aSI6IjUxY2YwNjViLTZhZmUtNDk0Yi1hNzE4LTNhNWE0ZWNiYTM0YyJ9.cHgXlwobUaE3aIlBPerrbfz25zTz4EW9YA2E-ZHCdLQ"}
+2021-11-15 09:35:43,444: security token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTZWNyZXRBY2Nlc3NLZXkiOiJWNFB2c2gyQ25LSVdkczBhTFJZNitjZVNDenpIRVJMcVdMSGVNV2Z3IiwiZXBvY2giOjE2MzYxMzMzOTM5OTAsImV4dGVybmFsX2lkIjoiNTJjMWJiNWEtNTUzYy00OTg3LWEyZDktZDNiMmY2YzQ5NzY5IiwiQ1NSb2xlIjoidXNlciIsIndvcmtlci1xdW90YV91cy1lYXN0LTEiOjMwLCJhd3NfYWNjb3VudF9pZCI6IjIyNzk2MDIzNjcxNyIsIlVzZXJuYW1lIjoicXVlcnlfc2VydmljZV9hY2NvdW50IiwiQWNjZXNzS2V5SWQiOiJZQldENldOVUU0REJIRE02S09KSiIsIlNlcnZpY2VUeXBlIjoiUHJlbWl1bSIsIkxvZ2luRGlzY3JpbWluYXRvciI6IjBjZmZhNzdmLTRhYjctNDIxNi04ZDZkLTk0M2I1YWNmNTEwMSIsIm5hbWUiOiJxdWVyeV9zZXJ2aWNlX2FjY291bnQiLCJQcmltYXJ5VXNlciI6ImxhYkBjaGFvc3NlYXJjaC5jb20iLCJMb2dpblR5cGUiOiJhbGlhcyIsImV4cCI6MTYzNzA4NDE0MywiaWF0IjoxNjM2OTk3NzQzLCJlbWFpbCI6InF1ZXJ5X3NlcnZpY2VfYWNjb3VudCIsImp0aSI6IjUxY2YwNjViLTZhZmUtNDk0Yi1hNzE4LTNhNWE0ZWNiYTM0YyJ9.cHgXlwobUaE3aIlBPerrbfz25zTz4EW9YA2E-ZHCdLQ
+2021-11-15 09:35:43,454: GET http://localhost:9200/ [status:200 request:0.010s]
+2021-11-15 09:35:43,458: POST http://localhost:9200/.watches/_search [status:200 request:0.003s]
+2021-11-15 09:35:43,458: Elasticsearch response: {'took': 0, 'timed_out': False, '_shards': {'total': 1, 'successful': 1, 'skipped': 0, 'failed': 0}, 'hits': {'total': {'value': 1, 'relation': 'eq'}, 'max_score': 1.0, 'hits': [{'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:35:24.025Z', 'execution_state': 'execution_not_needed'}}}]}}
+2021-11-15 09:35:43,458: hits: [{'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:35:24.025Z', 'execution_state': 'execution_not_needed'}}}]
+2021-11-15 09:35:43,458: hit: {'_index': '.watches', '_type': '_doc', '_id': '702fc5ea-f1ae-4d1b-bf05-f8563c638aa3', '_score': 1.0, '_source': {'trigger': {'schedule': {'interval': '30m'}}, 'input': {'search': {'request': {'search_type': 'query_then_fetch', 'indices': ['kibana_sample_data_logs'], 'rest_total_hits_as_int': True, 'body': {'size': 0, 'query': {'bool': {'filter': {'range': {'timestamp': {'gte': '{{ctx.trigger.scheduled_time}}||-5m', 'lte': '{{ctx.trigger.scheduled_time}}', 'format': 'strict_date_optional_time||epoch_millis'}}}}}}}}}, 'condition': {'script': {'source': 'if (ctx.payload.hits.total > params.threshold) { return true; } return false;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'transform': {'script': {'source': 'HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;', 'lang': 'painless', 'params': {'threshold': 1000}}}, 'actions': {'webhook_1': {'webhook': {'scheme': 'http', 'host': 'somehost.com', 'port': 99, 'method': 'post', 'path': 'myalert', 'params': {}, 'headers': {}, 'body': '{\n  "message": "Watch [{{ctx.metadata.name}}] has exceeded the threshold"\n}'}}}, 'metadata': {'name': 'watcher-webhook-1', 'watcherui': {'trigger_interval_unit': 'm', 'agg_type': 'count', 'time_field': 'timestamp', 'trigger_interval_size': 30, 'term_size': 5, 'time_window_unit': 'm', 'threshold_comparator': '>', 'index': ['kibana_sample_data_logs'], 'time_window_size': 5, 'threshold': 1000}, 'xpack': {'type': 'threshold'}}, 'status': {'state': {'active': True, 'timestamp': '2021-11-15T15:05:23.882Z'}, 'actions': {'webhook_1': {'ack': {'timestamp': '2021-11-15T15:05:23.882Z', 'state': 'awaits_successful_execution'}}}, 'version': -1, 'last_checked': '2021-11-15T17:35:24.025Z', 'execution_state': 'execution_not_needed'}}}
+2021-11-15 09:35:43,458: Exporting original ES json file: watcher-webhook-1.json
+2021-11-15 09:35:43,459: Extracting data from ES json:
+2021-11-15 09:35:43,459:    monitor_name: watcher-webhook-1-monitor
+2021-11-15 09:35:43,459:    interval: 30m
+2021-11-15 09:35:43,459:    match_dict: {'interval': '30', 'unit': 'm'}
+2021-11-15 09:35:43,459:    interval_value: 30
+2021-11-15 09:35:43,459:    interval_unit: m
+2021-11-15 09:35:43,459:    interval_unit_name: MINUTES
+2021-11-15 09:35:43,460:    indices: ['kibana_sample_data_logs']
+2021-11-15 09:35:43,460:    size: 0
+2021-11-15 09:35:43,460:    timestamp_field: timestamp
+2021-11-15 09:35:43,460:    timestamp_gte: {{ctx.trigger.scheduled_time}}||-5m
+2021-11-15 09:35:43,460:    timestamp_from: {{period_end}}||-5m
+2021-11-15 09:35:43,460:    timestamp_lte: {{ctx.trigger.scheduled_time}}
+2021-11-15 09:35:43,460:    timestamp_to: {{period_end}}
+2021-11-15 09:35:43,460:    trigger_name: watcher-webhook-1-monitor-trigger
+2021-11-15 09:35:43,460:    trigger_source: if (ctx.payload.hits.total > params.threshold) { return true; } return false;
+2021-11-15 09:35:43,460:    match_dict: {'source': 'ctx.payload.hits.total > params.threshold'}
+2021-11-15 09:35:43,460:    source: ctx.payload.hits.total > params.threshold
+2021-11-15 09:35:43,460:    source_split: ['ctx.payload.hits.total', '>', 'params.threshold']
+2021-11-15 09:35:43,460:    trigger_enum: ABOVE
+2021-11-15 09:35:43,460:    trigger_threshold: 1000
+2021-11-15 09:35:43,460:    source_conv: ctx.results[0].hits.total.value > 1000
+2021-11-15 09:35:43,460:    aggregation_type: count
+2021-11-15 09:35:43,460:    time_field: timestamp
+2021-11-15 09:35:43,460:    bucket_value: 5
+2021-11-15 09:35:43,460:    bucket_uot: m
+2021-11-15 09:35:43,460:    field_name: 
+2021-11-15 09:35:43,461:    term_size: 5
+2021-11-15 09:35:43,461:    term_field: 
+2021-11-15 09:35:43,461:    action: webhook_1
+2021-11-15 09:35:43,461:       webhook_schema: http
+2021-11-15 09:35:43,461:       webhook_host: somehost.com
+2021-11-15 09:35:43,461:       webhook_port: 99
+2021-11-15 09:35:43,461:       webhook_method: post
+2021-11-15 09:35:43,461:       webhook_path: myalert
+2021-11-15 09:35:43,461:       webhook_body: Watch [{{ctx.metadata.name}}] has exceeded the threshold
+2021-11-15 09:35:43,461:       Saving destination json file: watcher-webhook-1-webhook_1-destination.json
+2021-11-15 09:35:43,461:    Execute api call to create the new destination
+2021-11-15 09:35:44,009:    destination api response code: 200
+2021-11-15 09:35:44,009:    destination api response: {"id":"WyJkZXN0Iiwid2F0Y2hlci13ZWJob29rLTEtd2ViaG9va18xLWRlc3RpbmF0aW9uIl0","ok":true,"version":1}
+2021-11-15 09:35:44,009:    destination id: WyJkZXN0Iiwid2F0Y2hlci13ZWJob29rLTEtd2ViaG9va18xLWRlc3RpbmF0aW9uIl0
+2021-11-15 09:35:44,010:    action_json: {
+   "name":"webhook_1",
+   "destination_id":"WyJkZXN0Iiwid2F0Y2hlci13ZWJob29rLTEtd2ViaG9va18xLWRlc3RpbmF0aW9uIl0",
+   "subject_template":{
+      "lang":"mustache",
+      "source":"{{subject}}"
+   },
+   "message_template":{
+      "lang":"mustache",
+      "source":"Watch [{{ctx.metadata.name}}] has exceeded the threshold"
+   },
+   "throttle_enabled":false
+}
+2021-11-15 09:35:44,010:    Deleting the when node from aggregations
+2021-11-15 09:35:44,010:    updated_json: {'type': 'monitor', 'name': 'watcher-webhook-1-monitor', 'enabled': True, 'schedule': {'period': {'interval': 30, 'unit': 'MINUTES'}}, 'inputs': [{'search': {'indices': ['kibana_sample_data_logs'], 'query': {'size': 0, 'query': {'bool': {'filter': [{'range': {'timestamp': {'from': '{{period_end}}||-5m', 'to': '{{period_end}}', 'include_lower': True, 'include_upper': True, 'format': 'epoch_millis', 'boost': 1}}}], 'adjust_pure_negative': True, 'boost': 1}}, 'aggregations': {}}}}], 'triggers': [{'name': 'watcher-webhook-1-monitor-trigger', 'severity': '1', 'condition': {'script': {'lang': 'painless', 'source': 'ctx.results[0].hits.total.value > 1000'}}, 'actions': [], 'min_time_between_executions': None, 'rolling_window_size': None}], 'ui_metadata': {'schedule': {'cronExpression': '0 */1 * * *', 'period': {'unit': 'MINUTES', 'interval': 30}, 'timezone': None, 'daily': 0, 'monthly': {'type': 'day', 'day': 1}, 'weekly': {'tue': False, 'wed': False, 'thur': False, 'sat': False, 'fri': False, 'mon': False, 'sun': False}, 'frequency': 'interval'}, 'search': {'aggregationType': 'count', 'fieldName': '', 'overDocuments': 'all documents', 'searchType': 'graph', 'bucketValue': 5, 'timeField': 'timestamp', 'groupedOverTop': 5, 'groupedOverFieldName': '', 'bucketUnitOfTime': 'm', 'where': {'fieldName': [], 'fieldRangeEnd': 0, 'fieldRangeStart': 0, 'fieldValue': '', 'operator': 'is'}}, 'triggers': {'watcher-webhook-1-monitor-trigger': {'value': 1000, 'enum': 'ABOVE'}}}}
+2021-11-15 09:35:44,010:    Converted actions: [{'name': 'webhook_1', 'destination_id': 'WyJkZXN0Iiwid2F0Y2hlci13ZWJob29rLTEtd2ViaG9va18xLWRlc3RpbmF0aW9uIl0', 'subject_template': {'lang': 'mustache', 'source': '{{subject}}'}, 'message_template': {'lang': 'mustache', 'source': 'Watch [{{ctx.metadata.name}}] has exceeded the threshold'}, 'throttle_enabled': False}]
+2021-11-15 09:35:44,010:    Saving monitor json file: watcher-webhook-1-monitor.json
+2021-11-15 09:35:44,011:    Execute api call to create the new monitor
+2021-11-15 09:35:44,420:    monitor api response code: 200
+2021-11-15 09:35:44,420:    monitor api response: {"ok":true,"resp":{"_id":"WyJtb25pdG9yIiwid2F0Y2hlci13ZWJob29rLTEtbW9uaXRvciJd","_primary_term":2,"_seq_no":0,"_version":1636123904364,"monitor":{"monitors":[{"acknowledged":0,"active":0,"currentTime":1636997744480,"enabled":true,"errors":0,"id":"","ifPrimaryTerm":0,"ifSeqNo":0,"ignored":0,"lastNotificationTime":0,"latestAlert":"--","monitor":{"enabled":true,"inputs":[{"search":{"indices":["kibana_sample_data_logs"],"query":{"aggregations":{},"query":{"bool":{"adjust_pure_negative":true,"boost":1,"filter":[{"range":{"timestamp":{"boost":1,"format":"epoch_millis","from":"{{period_end}}||-5m","include_lower":true,"include_upper":true,"to":"{{period_end}}"}}}]}},"size":0}}}],"name":"watcher-webhook-1-monitor","schedule":{"period":{"interval":30,"unit":"MINUTES"}},"triggers":[{"actions":[],"condition":{"script":{"lang":"painless","source":"ctx.results[0].hits.total.value > 1000"}},"min_time_between_executions":null,"name":"watcher-webhook-1-monitor-trigger","rolling_window_size":null,"severity":"1"}],"type":"monitor","ui_metadata":{"schedule":{"cronExpression":"0 */1 * * *","daily":0,"frequency":"interval","monthly":{"day":1,"type":"day"},"period":{"interval":30,"unit":"MINUTES"},"timezone":null,"weekly":{"fri":false,"mon":false,"sat":false,"sun":false,"thur":false,"tue":false,"wed":false}},"search":{"aggregationType":"count","bucketUnitOfTime":"m","bucketValue":5,"fieldName":"","groupedOverFieldName":"","groupedOverTop":5,"overDocuments":"all documents","searchType":"graph","timeField":"timestamp","where":{"fieldName":[],"fieldRangeEnd":0,"fieldRangeStart":0,"fieldValue":"","operator":"is"}},"triggers":{"watcher-webhook-1-monitor-trigger":{"enum":"ABOVE","value":1000}}}},"name":"watcher-webhook-1-monitor","version":1}],"ok":true,"totalMonitors":1}}}
+2021-11-15 09:35:44,420: ##########################################################################
+2021-11-15 09:35:44,421: Ending main

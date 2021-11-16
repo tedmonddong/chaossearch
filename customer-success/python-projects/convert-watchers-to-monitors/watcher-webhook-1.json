@@ -1,0 +1,109 @@
+{
+   "_index": ".watches",
+   "_type": "_doc",
+   "_id": "702fc5ea-f1ae-4d1b-bf05-f8563c638aa3",
+   "_score": 1.0,
+   "_source": {
+      "trigger": {
+         "schedule": {
+            "interval": "30m"
+         }
+      },
+      "input": {
+         "search": {
+            "request": {
+               "search_type": "query_then_fetch",
+               "indices": [
+                  "kibana_sample_data_logs"
+               ],
+               "rest_total_hits_as_int": true,
+               "body": {
+                  "size": 0,
+                  "query": {
+                     "bool": {
+                        "filter": {
+                           "range": {
+                              "timestamp": {
+                                 "gte": "{{ctx.trigger.scheduled_time}}||-5m",
+                                 "lte": "{{ctx.trigger.scheduled_time}}",
+                                 "format": "strict_date_optional_time||epoch_millis"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "condition": {
+         "script": {
+            "source": "if (ctx.payload.hits.total > params.threshold) { return true; } return false;",
+            "lang": "painless",
+            "params": {
+               "threshold": 1000
+            }
+         }
+      },
+      "transform": {
+         "script": {
+            "source": "HashMap result = new HashMap(); result.result = ctx.payload.hits.total; return result;",
+            "lang": "painless",
+            "params": {
+               "threshold": 1000
+            }
+         }
+      },
+      "actions": {
+         "webhook_1": {
+            "webhook": {
+               "scheme": "http",
+               "host": "somehost.com",
+               "port": 99,
+               "method": "post",
+               "path": "myalert",
+               "params": {},
+               "headers": {},
+               "body": "{\n  \"message\": \"Watch [{{ctx.metadata.name}}] has exceeded the threshold\"\n}"
+            }
+         }
+      },
+      "metadata": {
+         "name": "watcher-webhook-1",
+         "watcherui": {
+            "trigger_interval_unit": "m",
+            "agg_type": "count",
+            "time_field": "timestamp",
+            "trigger_interval_size": 30,
+            "term_size": 5,
+            "time_window_unit": "m",
+            "threshold_comparator": ">",
+            "index": [
+               "kibana_sample_data_logs"
+            ],
+            "time_window_size": 5,
+            "threshold": 1000
+         },
+         "xpack": {
+            "type": "threshold"
+         }
+      },
+      "status": {
+         "state": {
+            "active": true,
+            "timestamp": "2021-11-15T15:05:23.882Z"
+         },
+         "actions": {
+            "webhook_1": {
+               "ack": {
+                  "timestamp": "2021-11-15T15:05:23.882Z",
+                  "state": "awaits_successful_execution"
+               }
+            }
+         },
+         "version": -1,
+         "last_checked": "2021-11-15T17:35:24.025Z",
+         "execution_state": "execution_not_needed"
+      }
+   }
+}
