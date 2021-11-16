@@ -1,0 +1,162 @@
+version: '3'
+services:
+  odfe-certs:
+    image: amazon/opendistro-for-elasticsearch:1.13.1
+    container_name: odfe-certs
+    environment:
+      CA_PASSWORD: $CA_PASSWORD
+      ODFENODE1_CERT_PASSWORD: $ODFENODE1_CERT_PASSWORD
+      ODFENODE2_CERT_PASSWORD: $ODFENODE2_CERT_PASSWORD
+      KIBANA_CERT_PASSWORD: $KIBANA_CERT_PASSWORD
+    command: >
+      bash -c '
+        if [[ ! -f /certs/odfenode1.p12 || \
+              ! -f /certs/odfenode2.p12 || \
+              ! -f /certs/kibana.zip ]]; then
+          echo "Removing certificates" &&
+          rm -rf /certs/* &&
+          
+          echo "Generating CA" &&
+          find / -name "*certutil" && echo "Finding done" && 
+          cd /usr &&
+          bin/certutil ca --silent --pass ${CA_PASSWORD} --pem --out /certs/ca.zip &&
+          unzip /certs/ca.zip -d /certs &&
+          
+          echo "Generating certificate for odfenode1" &&
+          cd /usr &&
+          bin/certutil cert --silent --ca-cert /certs/ca/ca.crt --ca-key /certs/ca/ca.key --ca-pass ${CA_PASSWORD} --pass ${ODFENODE1_CERT_PASSWORD} --dns odfenode1 --out /certs/odfenode1.p12 &&
+          
+          echo "Generating certificate for odfenode2" &&
+          cd /usr &&
+          bin/certutil cert --silent --ca-cert /certs/ca/ca.crt --ca-key /certs/ca/ca.key --ca-pass ${CA_PASSWORD} --pass ${ODFENODE2_CERT_PASSWORD} --dns odfenode2 --out /certs/odfenode2.p12 &&
+          
+          echo "Generating certificate for Kibana" &&
+          cd usr &&
+          bin/certutil cert --silent --ca-cert /certs/ca/ca.crt --ca-key /certs/ca/ca.key --ca-pass ${CA_PASSWORD} --pass ${KIBANA_CERT_PASSWORD} --pem --dns kibana --out /certs/kibana.zip &&
+          unzip /certs/kibana.zip -d /certs &&
+          mv /certs/instance/instance.crt /certs/kibana.crt &&
+          mv /certs/instance/instance.key /certs/kibana.key &&
+          rm -rf /certs/instance &&
+          
+          chown -R 1000:0 /certs
+        fi;
+      '
+    user: "0"
+    working_dir: /usr/share/elasticsearch
+    volumes: 
+      - certs:/certs
+
+  odfe-node1:
+    image: amazon/opendistro-for-elasticsearch:1.13.1
+    container_name: odfe-node1
+    environment:
+      - cluster.name=odfe-cluster
+      - node.name=odfe-node1
+      - discovery.seed_hosts=odfe-node1,odfe-node2
+      - cluster.initial_master_nodes=odfe-node1,odfe-node2
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - network.host=_site_
+      - xpack.security.enabled=true
+      - xpack.security.authc.token.enabled=true
+      - xpack.security.audit.enabled=true
+      - xpack.security.authc.realms.file.file1.order=0
+      - xpack.security.authc.realms.native.native1.order=1
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.keystore.password=$ODFENODE1_CERT_PASSWORD
+      - xpack.security.transport.ssl.truststore.password=$ODFENODE1_CERT_PASSWORD
+      - xpack.security.transport.ssl.keystore.path=certs/odfenode1.p12
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.password=$ODFENODE1_CERT_PASSWORD
+      - xpack.security.http.ssl.truststore.password=$ODFENODE1_CERT_PASSWORD
+      - xpack.security.http.ssl.keystore.path=certs/odfenode1.p12    
+      - xpack.security.http.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=trial
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the Elasticsearch user, set to at least 65536 on modern systems
+        hard: 65536
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs/:ro
+      - ./elasticsearch/config/analysis:/usr/share/elasticsearch/config/analysis:ro
+      - odfe-data1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9600:9600 # required for Performance Analyzer
+    networks:
+      - odfe-net
+
+  odfe-node2:
+    image: amazon/opendistro-for-elasticsearch:1.13.1
+    container_name: odfe-node2
+    environment:
+      - cluster.name=odfe-cluster
+      - node.name=odfe-node2
+      - discovery.seed_hosts=odfe-node1,odfe-node2
+      - cluster.initial_master_nodes=odfe-node1,odfe-node2
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - network.host=_site_
+      - xpack.security.enabled=true
+      - xpack.security.authc.token.enabled=true
+      - xpack.security.audit.enabled=true
+      - xpack.security.authc.realms.file.file1.order=0
+      - xpack.security.authc.realms.native.native1.order=1
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.keystore.password=$ODFENODE2_CERT_PASSWORD
+      - xpack.security.transport.ssl.truststore.password=$ODFENODE2_CERT_PASSWORD
+      - xpack.security.transport.ssl.keystore.path=certs/odfenode2.p12
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.password=$ODFENODE2_CERT_PASSWORD
+      - xpack.security.http.ssl.truststore.password=$ODFENODE2_CERT_PASSWORD
+      - xpack.security.http.ssl.keystore.path=certs/odfenode2.p12
+      - xpack.security.http.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=trial
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs/:ro
+      - ./elasticsearch/config/analysis:/usr/share/elasticsearch/config/analysis:ro
+      - odfe-data2:/usr/share/elasticsearch/data
+    networks:
+      - odfe-net
+  kibana:
+    image: amazon/opendistro-for-elasticsearch-kibana:1.13.1
+    container_name: odfe-kibana
+    volumes:
+      - certs:/usr/share/kibana/config/certs/:ro
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      - ELASTICSEARCH_URL=https://odfe-node1:9200
+      - ELASTICSEARCH_HOSTS=https://odfe-node1:9200
+      - xpack.security.enabled=true
+      - elasticsearch.username=elastic
+      - elasticsearch.password=$ELASTIC_PASSWORD
+      - elasticsearch.ssl.certificateAuthorities=config/certs/ca/ca.crt
+      - elasticsearch.ssl.verificationMode=certificate
+    networks:
+      - odfe-net
+
+volumes:
+  odfe-data1:
+  odfe-data2:
+  certs:
+
+networks:
+  odfe-net:
+

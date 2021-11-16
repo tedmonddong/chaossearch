@@ -1,0 +1,94 @@
+<match td.*.*>
+  @type tdlog
+  apikey YOUR_API_KEY
+  auto_create_table
+  buffer_type file
+  buffer_path /var/log/td-agent/buffer/td
+
+  <secondary>
+    @type file
+    path /var/log/td-agent/failed_records
+  </secondary>
+</match>
+
+## match tag=debug.** and dump to console
+<match debug.**>
+  @type stdout
+</match>
+
+## built-in TCP input
+## @see http://docs.fluentd.org/articles/in_forward
+
+<source>
+  @type forward
+  port 24224
+</source>
+
+<source>
+  @type http
+  port 8888
+</source>
+
+## live debugging agent
+
+<source>
+  @type debug_agent
+  bind 127.0.0.1
+  port 24230
+</source>
+
+<source>
+  @type tail
+  path /var/log/myapp.log
+  pos_file /var/log/td-agent/myorg.log.pos
+  tag myorg.myapp
+  format /^(?<level>[^ ]*)[ \t]+\[(?<time>[^\]]*)\] \[(?<thread>[^\]]*)\] \[(?<request>[^\]]*)\] (?<class>[^ ]*): (?<message>.*)$/
+
+  time_format %Y-%m-%d %H:%M:%S,%L %z
+  #timezone +0530
+  time_key time
+  keep_time_key true
+  types time:time
+</source>
+
+<match myorg.**>
+   @type copy
+   <store>
+    @type file
+    path /var/log/td-agent/forward.log
+  </store>
+
+  <store>
+    @type forward
+    @id out_es
+    @log_level "info"
+
+    transport tcp
+
+    #hosts "https://admin:admin@odfe-fluentd-agg:24224"
+    #include_tag_key true
+    #scheme https
+    #ssl_verify false
+    #ssl_version TLSv1_2
+    #reload_connections false
+    #reconnect_on_error true
+    #reload_on_failure true
+
+    #time_format %Y-%m-%dT%H:%M:%S
+    #include_timestamp true
+    <server>
+      port 24224
+      #proto tcp
+      host odfe-fluentd-agg
+    </server>
+    <buffer>
+      flush_thread_count 8
+      flush_interval 30s
+      chunk_limit_size 2M
+      queue_limit_length 32
+      retry_max_interval 30
+      retry_forever true
+    </buffer>
+  </store>
+</match>
+

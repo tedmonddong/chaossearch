@@ -1,0 +1,34 @@
+# Apache Access Logs
+<source>
+  type tail
+  format apache
+  path /var/log/apache2/access_log
+  pos_file /var/log/td-agent/apache2.access.pos
+  tag hostname.httpd.access
+</source>
+# Apache Error Logs
+<source>
+  type tail
+  format /^\[[^ ]* (?<time>[^\]]*)\] \[(?<level>[^\]]*)\] (?<message>.*)$/
+  time_format %b %d %H:%M:%S %Y
+  path /var/log/apache2/error_log
+  pos_file /var/log/td-agent/apache2.error.pos
+  tag hostname.httpd.error
+</source>
+
+# Listen to Syslog
+<source>
+  type syslog
+  port 42185
+  tag hostname.system
+</source>
+
+# Ship data to the aggregator over SSL
+<match *.**>
+  type secure_forward
+  shared_key FLUENTD_SECRET
+  self_hostname odfe-fluentd-agg 
+  <server>
+    host odfe-fluentd-agg
+  </server>
+</match>
