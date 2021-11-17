@@ -1,5 +1,5 @@
 NAME = tdong/elasticsearch
-VERSION = 1.0.3
+VERSION = 1.0.6
 
 .PHONY: all build clean push realclean
 

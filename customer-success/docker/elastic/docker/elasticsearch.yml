@@ -1,5 +1,12 @@
 cluster.name: "docker-cluster"
 network.host: 0.0.0.0
+xpack.security.enabled: true
+discovery.type: single-node
+xpack.security.authc.realms:
+    native.realm1: 
+        order: 0
+        enabled: true
+        authentication.enabled: true
 xpack.notification.email.account:
     gmail_account:
         profile: gmail
