@@ -6,28 +6,38 @@ import re
 import requests
 from os.path import exists
 from elasticsearch import Elasticsearch
+from ssl import create_default_context
 # from elasticsearch.client import WatcherClient
+
 
 monitor_api_url = None
 destination_api_url = None
 api = False
-cs_route_token = ""
-cs_security_token = ""
-cs_jwt_token_url = ""
-cs_creds_file = ""
+cs_route_token = None
+cs_security_token = None
+cs_jwt_token_url = None
+cs_creds_file = None
 export_watchers_to_file = False
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Convert Elastic Alerts to CS Monitors')
+    parser.add_argument('--es_auth_type', required=True, choices=('http_auth', 'http_auth_ssl', 'api_key', 'none'), default='none', help='The type of ES authentication')
+    parser.add_argument('--es_http_auth_user', required=False, help='The ES user id')
+    parser.add_argument('--es_http_auth_secret', required=False, help='The ES user secret')
+    parser.add_argument('--es_ssl_cafile', required=False, help='The full path to the private certificate file')
+    parser.add_argument('--es_api_key_id', required=False, help='The ES API key id')
+    parser.add_argument('--es_api_key', required=False, help='The ES API key')
+    parser.add_argument('--es_host', required=True, help='The ES host')
+    parser.add_argument('--es_port', required=False, default='9200', help='The ES port (9200 - default')
+    parser.add_argument('--es_scheme', required=False, choices=('http', 'https'), default='http', help='The ES scheme (http - default)')
     parser.add_argument('--monitor_api_url', required=False, default='', help='The CS api url for creating monitors')
     parser.add_argument('--destination_api_url', required=False, default='', help='The CS api url for creating destinations')
     parser.add_argument('--cs_route_token', required=False, help='The CS route token for the x-amz-chaossumo-route-token header')
-    #parser.add_argument('--cs_security_token', required=False, help='The CS security token for the x-amz-security-token header')
     parser.add_argument('--cs_jwt_token_url', required=False, help='The CS url to retrieve the security token from')
     parser.add_argument('--cs_creds_file', required=False, help='The file containing the login credentials for CS')
-    parser.add_argument('--api', action='store_true', required=False, help='run the api')
-    parser.add_argument('--export_watchers_to_file', action='store_true', required=False, help='Export ES watchers to files')
+    parser.add_argument('--api', action='store_true', required=False, help='Indicates if the monitors/destinations should be created using api calls')
+    parser.add_argument('--export_watchers_to_file', action='store_true', required=False, help='Export each ES watcher as a json file')
     return parser.parse_args()
 
 
@@ -43,16 +53,40 @@ def main():
     global cs_jwt_token_url
     global cs_creds_file
     global export_watchers_to_file
+    es_auth_type = args.es_auth_type
+    es_http_auth_user = args.es_http_auth_user
+    es_http_auth_secret = args.es_http_auth_secret
+    es_ssl_cafile = args.es_ssl_cafile
+    es_api_key_id = args.es_api_key_id
+    es_api_key = args.es_api_key
+    es_host = args.es_host
+    es_port = args.es_port
+    es_scheme = args.es_scheme
     monitor_api_url = args.monitor_api_url
     destination_api_url = args.destination_api_url
     api = args.api
     cs_route_token = args.cs_route_token
     cs_jwt_token_url = args.cs_jwt_token_url
     cs_creds_file = args.cs_creds_file
-    cs_security_token = get_security_token(cs_jwt_token_url, cs_creds_file)
+    if cs_jwt_token_url is not None and cs_jwt_token_url != '' \
+            and cs_creds_file is not None and cs_creds_file != '':
+        cs_security_token = get_security_token(cs_jwt_token_url, cs_creds_file)
     export_watchers_to_file = args.export_watchers_to_file
     # Find out about authentication at EFX
-    es = Elasticsearch(['localhost'], scheme="http", port=9200)
+    if es_auth_type == 'none':
+        es = Elasticsearch([es_host], scheme=es_scheme, port=es_port)
+    elif es_auth_type == 'http_auth':
+        es = Elasticsearch([es_host], scheme=es_scheme, port=es_port,
+                           http_auth=(es_http_auth_user, es_http_auth_secret))
+    elif es_auth_type == 'http_auth_ssl':
+        context = create_default_context(cafile=es_ssl_cafile)
+        es = Elasticsearch([es_host], scheme=es_scheme, port=es_port,
+                           http_auth=(es_http_auth_user, es_http_auth_secret),
+                           ssl_context=context)
+    elif es_auth_type == 'api_key':
+        es = Elasticsearch([es_host], scheme=es_scheme, port=es_port,
+                           api_key=(es_api_key_id, es_api_key))
+    # es = Elasticsearch([es_host], scheme=es_scheme, port=es_port)
     res = es.search(index=".watches", query={"match_all": {}})
     logging.info(f'Elasticsearch response: {res}')
     convert_watcher(res)
@@ -60,6 +94,7 @@ def main():
 
 
 def get_security_token(token_url, creds_file):
+    logging.info('Getting security token')
     file_exists = exists(creds_file)
     if file_exists:
         with open(creds_file, 'r') as file:
