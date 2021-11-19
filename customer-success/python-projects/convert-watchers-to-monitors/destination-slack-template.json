@@ -1,5 +1,5 @@
 {
-   "name":"destination-slack",
+   "name":"{{slack_name}}",
    "type":"slack",
    "slack":{
       "url":"https://hooks.slack.com/services/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"

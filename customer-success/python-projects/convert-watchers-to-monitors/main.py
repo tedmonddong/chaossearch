@@ -101,13 +101,16 @@ def get_security_token(token_url, creds_file):
             creds_data = json.loads(file.read())
             header = {"x-amz-chaossumo-route-token": "login",
                       "Content-Type": "application/json"}
+            logging.info(f'   Posting json: {creds_data}')
             response = requests.post(token_url, json=creds_data, verify=False, headers=header)
             response_status_code = response.status_code
             logging.info(f'cs jwt token response code: {response_status_code}')
+            logging.info(f'cs jwt token api response: {response.text}')
             if response_status_code == 200:
-                logging.info(f'cs jwt token api response: {response.text}')
                 token = json.loads(response.text)['Token']
                 return token
+            else:
+                raise Exception('Response code %s received while attempting to retrieve CS token', response_status_code)
     else:
         logging.info(f'Creds file {cs_creds_file} not found')
     return ""
@@ -285,6 +288,7 @@ def convert_watcher(watches):
                     webhook_body = json.loads(webhook['body'])['message']
                     logging.info(f'      webhook_body: {webhook_body}')
                     action_json = action_json.replace('{{message}}', webhook_body)
+                    action_json = action_json.replace('{{subject}}', '')
                     with open('destination-webhook-template.json', 'r') as file:
                         destination_template = file.read()
                     #destination_webhook_name = webhook_name + '-destination'
@@ -297,8 +301,17 @@ def convert_watcher(watches):
                     destination_template = destination_template.replace('{{webhook_path}}', webhook_path)
                     #destination_template = destination_template.replace('{{webhook_url}}', webhook_url)
                 elif action.startswith("slack"):
-                    # TODO
-                    continue
+                    slack = hit_source['actions'][f'{action}']['slack']['message']
+                    slack_to = slack['to']
+                    logging.info(f'      slack_to: {slack_to}')
+                    slack_text = slack['text']
+                    logging.info(f'      slack_text: {slack_text}')
+                    action_json = action_json.replace('{{subject}}', '')
+                    action_json = action_json.replace('{{message}}', slack_text)
+                    # The slack url is not available from any api call so it will have to be set in the template
+                    with open('destination-slack-template.json', 'r') as file:
+                        destination_template = file.read()
+                    destination_template = destination_template.replace('{{slack_name}}', destination_name)
                 elif action.startswith("chime"):
                     # TODO
                     continue
@@ -318,15 +331,20 @@ def convert_watcher(watches):
                         # header = {"sgtenant": "privateTenant"}
                         header = {"x-amz-chaossumo-route-token": f"{cs_route_token}",
                                   "x-amz-security-token": f"{cs_security_token}"}
+                        logging.info(f'   Posting json: {json_d}')
                         response = requests.post(destination_api_url, json=json_d, verify=False, headers=header)
+                        response_status_code = response.status_code
                         logging.info(f'   destination api response code: {response.status_code}')
                         logging.info(f'   destination api response: {response.text}')
-                        destination_id = json.loads(response.text)['id']
-                        logging.info(f'   destination id: {destination_id}')
+                        if response_status_code == 200:
+                            destination_id = json.loads(response.text)['id']
+                            logging.info(f'   destination id: {destination_id}')
+                        else:
+                            raise Exception('Response code %s received while attempting to create destination',
+                                            response_status_code)
+
 
                 action_json = action_json.replace('{{action_name}}', action)
-                #action_json = action_json.replace('{{email_subject}}', email_subject)
-                #action_json = action_json.replace('{{email_message}}', email_message)
                 action_json = action_json.replace('{{destination_id}}', destination_id)
                 logging.info(f'   action_json: {action_json}')
                 conv_actions.append(json.loads(action_json))
@@ -380,9 +398,31 @@ def convert_watcher(watches):
                 # header = {"sgtenant": "privateTenant"}
                 header = {"x-amz-chaossumo-route-token": f"{cs_route_token}",
                           "x-amz-security-token": f"{cs_security_token}"}
+                logging.info(f'   Posting json: {json_d}')
                 response = requests.post(monitor_api_url, json=json_d, verify=False, headers=header)
+                response_status_code = response.status_code
                 logging.info(f'   monitor api response code: {response.status_code}')
                 logging.info(f'   monitor api response: {response.text}')
+                if response_status_code == 200:
+                    monitor_id = json.loads(response.text)['resp']['_id']
+                    logging.info(f'   monitor id: {monitor_id}')
+                else:
+                    raise Exception('Response code %s received while attempting to create monitor',
+                                    response_status_code)
+
+                logging.info("   Execute api call to create trigger/action")
+                json_d = conv_json
+                trigger_action_api_url = monitor_api_url + '/' + monitor_id
+                logging.info(f'   Posting json: {json_d}')
+                response = requests.put(trigger_action_api_url, json=json_d, verify=False, headers=header)
+                response_status_code = response.status_code
+                logging.info(f'   trigger/action api response code: {response.status_code}')
+                logging.info(f'   trigger/action api response: {response.text}')
+                if response_status_code == 200:
+                    logging.info(f'   trigger/action api response: {response.text}')
+                else:
+                    raise Exception('Response code %s received while attempting to create monitor',
+                                    response_status_code)
 
             logging.info('##########################################################################')
 

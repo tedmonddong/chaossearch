@@ -1,6 +1,6 @@
 {
-   "type":"monitor",
    "name":"{{monitor_name}}",
+   "type":"monitor",
    "enabled":true,
    "schedule":{
       "period":{
@@ -20,18 +20,13 @@
                         {
                            "range":{
                               "timestamp":{
-                                 "from":"{{timestamp_from}}",
-                                 "to":"{{timestamp_to}}",
-                                 "include_lower":true,
-                                 "include_upper":true,
-                                 "format":"epoch_millis",
-                                 "boost":1
+                                 "gte":"{{timestamp_from}}",
+                                 "lte":"{{timestamp_to}}",
+                                 "format":"epoch_millis"
                               }
                            }
                         }
-                     ],
-                     "adjust_pure_negative":true,
-                     "boost":1
+                     ]
                   }
                },
                "aggregations":{
@@ -62,45 +57,45 @@
    ],
    "ui_metadata":{
       "schedule":{
-         "cronExpression":"0 */1 * * *",
+         "timezone":null,
+         "frequency":"interval",
          "period":{
             "unit":"{{interval_unit_name}}",
             "interval":{{interval_value}}
          },
-         "timezone":null,
          "daily":0,
+         "weekly":{
+            "mon":false,
+            "tue":false,
+            "wed":false,
+            "thur":false,
+            "fri":false,
+            "sat":false,
+            "sun":false
+         },
          "monthly":{
             "type":"day",
             "day":1
          },
-         "weekly":{
-            "tue":false,
-            "wed":false,
-            "thur":false,
-            "sat":false,
-            "fri":false,
-            "mon":false,
-            "sun":false
-         },
-         "frequency":"interval"
+         "cronExpression":"0 */1 * * *"
       },
       "search":{
+         "searchType":"graph",
          "aggregationType":"{{aggregation_type}}",
+         "timeField":"{{time_field}}",
          "fieldName":"{{field_name}}",
          "overDocuments":"all documents",
-         "searchType":"graph",
-         "bucketValue":{{bucket_value}},
-         "timeField":"{{time_field}}",
          "groupedOverTop":{{term_size}},
          "groupedOverFieldName":"{{term_field}}",
+         "bucketValue":{{bucket_value}},
          "bucketUnitOfTime":"{{bucket_uot}}",
          "where":{
             "fieldName":[
             ],
-            "fieldRangeEnd":0,
-            "fieldRangeStart":0,
+            "operator":"is",
             "fieldValue":"",
-            "operator":"is"
+            "fieldRangeStart":0,
+            "fieldRangeEnd":0
          }
       },
       "triggers":{
