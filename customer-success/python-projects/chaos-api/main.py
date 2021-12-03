@@ -61,7 +61,7 @@ def main():
         logging.info(f"Key json: {key_json}")
         if type == "view":
             print("Creating view payload...")
-            view_payload = create_view_payload(name=key, view_json=key_json, name_update=name, source_update=sources)
+            view_payload = create_view_payload(name=key, view_json=key_json, name_update=name, source_update=sources, source_delete=None)
             logging.info(f"View payload: {view_payload}")
             print("Updating view...")
             update_view(aws_auth=aws_auth, payload=view_payload, name=key, type=type)
@@ -70,7 +70,7 @@ def main():
                 results = delete_key(aws_auth=aws_auth, name=key, type="view", stop=True)
     elif action == "delete":
         print(f"Starting delete of {key}...")
-        if force:
+        if force and type == "object-group":
             print(f"Deleting indexes in {key}", end='', flush=True)
             indexes_json = get_index(aws_auth=aws_auth, name=key)
             logging.info(f"Indexes as json: {indexes_json}")
@@ -80,22 +80,29 @@ def main():
                 print(".")
                 # wait 30 seconds for the system to finish deleting the last few indexes
                 print("Finalizing delete...")
-                time.sleep(30)
+                time.sleep(60)
             else:
                 print(".")
         print("Deleting key...")
         results = delete_key(aws_auth=aws_auth, name=key, type=type, stop=True)
         if results is not None:
+            print("One or more views is using this object group")
             for result in results:
                 # update views to remove the og
-                key_json = get_key(aws_auth=aws_auth, name=result, type="view")
+                view_key = result.strip()
+                key_json = get_key(aws_auth=aws_auth, name=view_key, type="view")
                 logging.info(f"Key json: {key_json}")
                 print("Creating view payload...")
-                view_payload = create_view_payload(name=result, view_json=key_json, name_update=None, source_update=sources)
+                view_payload = create_view_payload(name=view_key, view_json=key_json, name_update=None, source_update=None, source_delete=key)
                 logging.info(f"View payload: {view_payload}")
-                print("Updating view...")
-                update_view(aws_auth=aws_auth, payload=view_payload, name=key, type=type)
-
+                if len(view_payload["sources"]) > 0:
+                    print("Updating view...")
+                    update_view(aws_auth=aws_auth, payload=view_payload, name=view_key, type="view")
+                else:
+                    print("Deleting view...")
+                    delete_view_results = delete_key(aws_auth=aws_auth, name=view_key, type="view", stop=True)
+            print("Deleting key...")
+            results = delete_key(aws_auth=aws_auth, name=key, type=type, stop=True)
     print("Done!")
     logging.info("Main: End")
 
@@ -160,7 +167,7 @@ def delete_index(aws_auth, keys):
         results = delete_key(aws_auth=aws_auth, name=key["Key"], type="index", stop=False)
 
 
-def create_view_payload(name, view_json, name_update, source_update):
+def create_view_payload(name, view_json, name_update, source_update, source_delete):
     transform, time_field, index_pattern = "", "", ""
     case_insensitive, cacheable = false, false
     tags = view_json["Tagging"]["TagSet"]["Tag"]
@@ -190,6 +197,13 @@ def create_view_payload(name, view_json, name_update, source_update):
     # apply updates
     if source_update is not None:
         source_list_update = source_update.split(",")
+    elif source_delete is not None:
+        print(f"original source from view: {source_list}")
+        print(f"the source that needs to be deleted: {source_delete}")
+        source_list_delete = [source_delete]
+        print(f"the source to delete as a list: {source_list_delete}")
+        source_list_update = list(set(source_list) ^ set(source_list_delete))
+        print(f"results of the diff: {source_list_update}")
     else:
         source_list_update = source_list
     if name_update is not None:
