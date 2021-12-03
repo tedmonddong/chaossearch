@@ -15,52 +15,13 @@ headers = {
 }
 force = false
 
-# account = ""
-# token = ""
-# token_url = "https://<<hostname>>/User/login"
-# token_headers = {
-#     "Accept": "application/json",
-#     "Content-Type": "application/json",
-#     "x-amz-chaossumo-route-token": "login"
-# }
-# token_payload = {"Username": "<<user>>", "Password": "<<pwd>>",
-#                  "ParentUid": "<<accountid>>", "Type": "service", "UniqueSession": true}
-# view_payload = {
-#     "bucket": "pwi-cloudtrail-live",
-#     "transforms": [],
-#     "caseInsensitive": true,
-#     "indexRetention": -1,
-#     "timeFieldName": "Records.eventTime",
-#     "indexPattern": ".*",
-#     "cacheable": false,
-#     "sources": [
-#         "lab-cloudtrail-logging"
-#     ],
-#     "overwrite": true
-# }
-# test_payload = {
-#     "bucket": "td-qsa-cloudtrail-view2",
-#     "sources": ["td-qsa-cloudtrail-og"],
-#     "indexPattern": ".*",
-#     "caseInsensitive": true,
-#     "cacheable": false,
-#     "overwrite": true,
-#     "indexRetention": -1,
-#     "timeFieldName": "Records.eventTime",
-#     "transforms": []
-# }
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Call ChaosSearch API')
-    # parser.add_argument('--cs_user', required=True, help='The CS user id')
-    # parser.add_argument('--cs_pwd', required=True, help='The CS user password')
     parser.add_argument('--host', required=True, help='The hostname')
-    # parser.add_argument('--account', required=True, help='The CS account id')
     parser.add_argument('--accesskey', required=True, help='Your AWS access key id')
     parser.add_argument('--secretkey', required=True, help='Your AWS secret key id')
     parser.add_argument('--region', required=True, help='The AWS region')
-    # parser.add_argument('--service', required=False, default='s3', help='The AWS service')
     parser.add_argument('--action', required=False, choices=('create', 'update', 'delete', 'list'), default='list',
                         help='The action to take')
     parser.add_argument('--type', required=False, choices=('object-group', 'view'), default='view')
@@ -71,30 +32,12 @@ def parse_args():
     return parser.parse_args()
 
 
-# def get_token():
-#     response = requests.request("POST", token_url, json=token_payload, headers=token_headers)
-#     logging.info("Token request response %s", response)
-#     if response.status_code != 200:
-#         logging.info("Request failed to retrieve token")
-#         raise Exception("non-200 token response code")
-#     else:
-#         logging.info("Successfully retrieved token")
-#     return json.loads(response.text)['Token']
-
-
 def main():
     logging.info("Main: Start")
     args = parse_args()
     global host
     global force
-    # global account
-    # global token
-    # global token_url
-    # global token_payload
-    # global action
-    # global key
     host = args.host
-    #account = args.account
     access_key = args.accesskey
     secret_key = args.secretkey
     region = args.region
@@ -105,12 +48,6 @@ def main():
     name = args.name
     sources = args.sources
     force = args.force
-    # token_url = "https://" + host + "/User/login"
-    # token_payload = {"Username": args.cs_user, "Password": args.cs_pwd,
-    #                  "ParentUid": account, "Type": "service", "UniqueSession": true}
-    # token_payload = {"Username": "query_service_account", "Password": "query_service_account",
-    #                  "ParentUid": "52c1bb5a-553c-4987-a2d9-d3b2f6c49769", "Type": "service", "UniqueSession": true}
-    # token = get_token()
     aws_auth = AWS4Auth(access_key, secret_key, region, service)
     if action == "list":
         print("Retrieving key details...")
