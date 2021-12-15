@@ -5,6 +5,7 @@ import os.path
 import requests
 import time
 import xmltodict
+from dotenv import dotenv_values
 from lowercase_booleans import true, false
 from requests_aws4auth import AWS4Auth
 from xml.etree import ElementTree as ET
@@ -22,11 +23,12 @@ force = false
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Call ChaosSearch API')
-    parser.add_argument('--host', required=True, help='The hostname')
-    parser.add_argument('--access_key', required=True, help='Your AWS access key')
-    parser.add_argument('--secret_key', required=True, help='Your AWS secret key')
-    parser.add_argument('--object_group_region', required=True, help='The AWS region where object groups are stored')
-    parser.add_argument('--view_region', required=True, help='The AWS region where views are stored')
+    # parser.add_argument('--host', required=True, help='The hostname')
+    # parser.add_argument('--access_key', required=True, help='Your AWS access key')
+    # parser.add_argument('--secret_key', required=True, help='Your AWS secret key')
+    # parser.add_argument('--object_group_region', required=True, help='The AWS region where object groups are stored')
+    # parser.add_argument('--view_region', required=True, help='The AWS region where views are stored')
+    parser.add_argument('--env', required=False, help='Name of the environment to run against')
     parser.add_argument('--action', required=True, choices=('create', 'update', 'delete', 'list', 'partition'),
                         default='list', help='The action to take')
     parser.add_argument('--type', required=True, choices=('object-group', 'view'), default='view')
@@ -45,11 +47,41 @@ def main():
     global object_group_region
     global view_region
     global force
-    host = args.host
-    access_key = args.access_key
-    secret_key = args.secret_key
-    object_group_region = args.object_group_region
-    view_region = args.view_region
+    env = args.env
+    env_file = ".env"
+    if env is not None:
+        env_file = env_file + "." + env
+    config = dotenv_values(env_file)
+    if "host" in config.keys():
+        host = config["host"]
+    else:
+        print(f"host is missing in {env_file}")
+        logging.info(f"The host setting is missing in {env_file}")
+        exit()
+    if "access_key" in config.keys():
+        access_key = config["access_key"]
+    else:
+        print(f"access_key is missing in {env_file}")
+        logging.info(f"The access_key setting is missing in {env_file}")
+        exit()
+    if "secret_key" in config.keys():
+        secret_key = config["secret_key"]
+    else:
+        print(f"secret_key is missing in {env_file}")
+        logging.info(f"The secret_key setting is missing in {env_file}")
+        exit()
+    if "object_group_region" in config.keys():
+        object_group_region = config["object_group_region"]
+    else:
+        print(f"object_group_region is missing in {env_file}")
+        logging.info(f"The object_group_region setting is missing in {env_file}")
+        exit()
+    if "view_region" in config.keys():
+        view_region = config["view_region"]
+    else:
+        print(f"view_region is missing in {env_file}")
+        logging.info(f"The view_region setting is missing in {env_file}")
+        exit()
     service = "s3"
     action = args.action
     type = args.type
