@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CHAOSSEARCH Kinesis Firehose Delivery Stream Template
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - 
+        Label:
+          default: "AWS Acccount Information"
+        Parameters:
+          - AWSAccountID
+          - AWSRegion
+      - 
+        Label: 
+          default: "Resource Names"
+        Parameters:
+          - KinesisFirehoseDeliveryStreamName
+          - KinesisFirehoseIAMPolicyName
+          - KinesisFirehoseIAMRoleName
+      -
+        Label:
+          default: "Other Information"
+        Parameters:
+          - S3DestinationBucket
+          - S3Prefix
+          - S3ErrorOutputPrefix
+    ParameterLabels:
+      AWSAccountID:
+        default: "The AWS Account ID"
+      AWSRegion:
+        default: "The AWS Region"
+      KinesisFirehoseDeliveryStreamName:
+        default: "The Kinesis Firehose Delivery Stream name"
+      KinesisFirehoseIAMPolicyName: 
+        default: "The Kinesis Firehose IAM Policy name"
+      KinesisFirehoseIAMRoleName: 
+        default: "The Kinesis Firehose IAM Role name"
+      S3DestinationBucket:
+        default: "The s3 bucket"
+      S3Prefix:
+        default: "The s3 bucket prefix"
+      S3ErrorOutputPrefix:
+        default: "The s3 bucket error output prefix"
+Parameters:
+  AWSAccountID:
+    Description: "Your AWS Account ID"
+    Type: String
+  AWSRegion:
+    Description: "The AWS Region"
+    Type: String
+  KinesisFirehoseDeliveryStreamName:
+    Description: "What name do you want to give for the Kinesis Firehose Delivery Stream?"
+    Type: String
+  KinesisFirehoseIAMPolicyName:
+    Description: "What name do you want to give for the Kinesis Firehose IAM Policy?"
+    Type: String
+  KinesisFirehoseIAMRoleName:
+    Description: "What name do you want to give for the Kinesis Firehose IAM Role?"
+    Type: String
+  S3DestinationBucket:
+    Description: "What is the destination s3 bucket for the firehose?"
+    Type: String
+  S3Prefix:
+    Description: "What is the s3 bucket prefix?"
+    Type: String
+  S3ErrorOutputPrefix:
+    Description: "What is the s3 bucket error output prefix?"
+    Type: String
+Resources:
+  KinesisFirehoseDeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub ${KinesisFirehoseDeliveryStreamName}
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !Join 
+          - ''
+          - - 'arn:aws:s3:::'
+            - !Sub ${S3DestinationBucket}
+        Prefix: !Sub ${S3Prefix}
+        ErrorOutputPrefix: !Sub ${S3ErrorOutputPrefix}
+        RoleARN: !GetAtt KinesisFirehoseRole.Arn
+  KinesisFirehoseRole:
+    DependsOn: KinesisFirehosePolicy
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${KinesisFirehoseIAMRoleName}
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns: 
+        - !Ref KinesisFirehosePolicy
+  KinesisFirehosePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${KinesisFirehoseIAMPolicyName}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:AbortMultipartUpload'
+              - 's3:GetBucketLocation'
+              - 's3:GetObject'
+              - 's3:ListBucket'
+              - 's3:ListBucketMultipartUploads'
+              - 's3:PutObject'
+            Resource: 
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Sub ${S3DestinationBucket}
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Sub ${S3DestinationBucket}
+                  - '/*'
+          - Effect: Allow
+            Action:
+              - 'logs:PutLogEvents'
+            Resource:
+              - !Join
+                - ':'
+                - - 'arn:aws:logs'
+                  - !Sub ${AWSRegion}
+                  - !Sub ${AWSAccountID}
+                  - 'log-group'
+                  - !Sub '/aws/kinesisfirehose/${KinesisFirehoseDeliveryStreamName}'
+                  - 'log-stream'
+                  - '*'
+Outputs:
+  KinesisFirehoseDeliveryStreamARN:
+    Description: The ARN of the new kinesis firehose delivery stream
+    Value:
+      Fn::GetAtt:
+      - KinesisFirehoseDeliveryStream
+      - Arn
+  KinesisFirehoseRoleARN:
+    Description: The ARN of the new iam role for the kinesis firehose delivery stream
+    Value:
+      Fn::GetAtt:
+      - KinesisFirehoseRole
+      - Arn

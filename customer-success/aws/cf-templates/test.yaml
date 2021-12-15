@@ -1,0 +1,254 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CHAOSSEARCH Kinesis Firehose Delivery Stream Template
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "AWS Acccount Information"
+        Parameters:
+          - AWSAccountID
+          - AWSRegion
+      - Label:
+          default: "Resource Names"
+        Parameters:
+          - KinesisFirehoseDeliveryStreamName
+          - KinesisFirehoseIAMPolicyName
+          - KinesisFirehoseIAMRoleName
+          - LambdaFunctionName
+          - LambdaIAMPolicyName
+          - LambdaIAMRoleName
+      - Label:
+          default: "Other Information"
+        Parameters:
+          - S3DestinationBucket
+          - S3Prefix
+          - S3ErrorOutputPrefix
+          - SSACCOUNTNAME
+          - SSREGION
+          - SSVPCID
+          - S3Bucket
+          - S3ObjectKey
+    ParameterLabels:
+      AWSAccountID:
+        default: "The AWS Account ID"
+      AWSRegion:
+        default: "The AWS Region"
+      KinesisFirehoseDeliveryStreamName:
+        default: "The Kinesis Firehose Delivery Stream name"
+      KinesisFirehoseIAMPolicyName:
+        default: "The Kinesis Firehose IAM Policy name"
+      KinesisFirehoseIAMRoleName:
+        default: "The Kinesis Firehose IAM Role name"
+      LambdaFunctionName:
+        default: "The Lambda Function name"
+      LambdaIAMPolicyName:
+        default: "The Lambda IAM Policy name"
+      LambdaIAMRoleName:
+        default: "The Lambda IAM Role name"
+      S3DestinationBucket:
+        default: "The s3 bucket"
+      S3Prefix:
+        default: "The s3 bucket prefix"
+      S3ErrorOutputPrefix:
+        default: "The s3 bucket error output prefix"
+      SSACCOUNTNAME:
+        default: "The 6th Street Account Name"
+      SSREGION:
+        default: "The 6th Street Region"
+      SSVPCID:
+        default: "The 6th Street VPC ID"
+      S3Bucket:
+        default: "The s3 bucket"
+      S3ObjectKey:
+        default: "The s3 object key"
+Parameters:
+  AWSAccountID:
+    Description: "Your AWS Account ID"
+    Type: String
+    Default: 772467465859
+  AWSRegion:
+    Description: "The AWS Region"
+    Type: String
+    Default: us-east-1
+  KinesisFirehoseDeliveryStreamName:
+    Description: "What name do you want to give for the Kinesis Firehose Delivery Stream?"
+    Type: String
+  KinesisFirehoseIAMPolicyName:
+    Description: "What name do you want to give for the Kinesis Firehose IAM Policy?"
+    Type: String
+  KinesisFirehoseIAMRoleName:
+    Description: "What name do you want to give for the Kinesis Firehose IAM Role?"
+    Type: String
+  LambdaFunctionName:
+    Description: "What name do you want to give for the Lambda Function?"
+    Type: String
+  LambdaIAMPolicyName:
+    Description: "What name do you want to give for the Lambda IAM Policy?"
+    Type: String
+  LambdaIAMRoleName:
+    Description: "What name do you want to give for the Lambda IAM Role?"
+    Type: String
+  S3DestinationBucket:
+    Description: "What is the destination s3 bucket for the firehose?"
+    Type: String
+  S3Prefix:
+    Description: "What is the s3 bucket prefix?"
+    Type: String
+  S3ErrorOutputPrefix:
+    Description: "What is the s3 bucket error output prefix?"
+    Type: String
+  SSACCOUNTNAME:
+    Description: "What is the 6th Street account name? (i.e. feddev)"
+    Type: String
+  SSREGION:
+    Description: "What is the 6th Street region? (i.e. use2)"
+    Type: String
+  SSVPCID:
+    Description: "What is the 6th Street vpc id? (i.e. vpc06ff6b453726b41b1)"
+    Type: String
+  S3Bucket:
+    Description: "What is the s3 bucket that contains the lambda code?"
+    Type: String
+    Default: td-lambda-functions
+  S3ObjectKey:
+    Description: "What is the s3 object key for the lambda code?"
+    Type: String
+    Default: td-ssm-log-processor-c38a66be-2b0d-4208-8f0d-30cb79779bdf.zip
+Resources:
+  KinesisFirehosePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${KinesisFirehoseIAMPolicyName}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - "s3:AbortMultipartUpload"
+              - "s3:GetBucketLocation"
+              - "s3:GetObject"
+              - "s3:ListBucket"
+              - "s3:ListBucketMultipartUploads"
+              - "s3:PutObject"
+            Resource:
+              - !Join
+                - ""
+                - - "arn:aws:s3:::"
+                  - !Sub ${S3DestinationBucket}
+              - !Join
+                - ""
+                - - "arn:aws:s3:::"
+                  - !Sub ${S3DestinationBucket}
+                  - "/*"
+          - Effect: Allow
+            Action:
+              - "logs:PutLogEvents"
+            Resource:
+              - !Join
+                - ":"
+                - - "arn:aws:logs"
+                  - !Sub ${AWSRegion}
+                  - !Sub ${AWSAccountID}
+                  - "log-group"
+                  - !Sub "/aws/kinesisfirehose/${KinesisFirehoseDeliveryStreamName}"
+                  - "log-stream"
+                  - "*"
+          - Effect: Allow
+            Action:
+              - "lambda:InvokeFunction"
+              - "lambda:GetFunctionConfiguration"
+            Resource:
+              - !Join
+                - ":"
+                - - "arn:aws:lambda"
+                  - !Sub ${AWSRegion}
+                  - !Sub ${AWSAccountID}
+                  - "function"
+                  - !GetAtt LambdaFunction.Name
+                  - "*"
+  LambdaPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${LambdaIAMPolicyName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "logs:CreateLogGroup"
+            Resource: !Sub "arn:aws:logs:${AWSRegion}:${AWSAccountID}:*"
+          - Effect: Allow
+            Action:
+              - "logs:CreateLogStream"
+              - "logs:PutLogEvents"
+            Resource: !Sub "arn:aws:logs:${AWSRegion}:${AWSAccountID}:log-group:/aws/lambda/${LambdaFunctionName}:*"
+          - Effect: Allow
+            Action:
+              - "firehose:PutRecordBatch"
+            Resource: !Join
+              - ""
+              - - !Sub "arn:aws:firehose:${AWSRegion}:${AWSAccountID}:deliverystream/"
+                - !GetAtt KinesisFirehoseDeliveryStream.Name
+  KinesisFirehoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${KinesisFirehoseIAMRoleName}
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref KinesisFirehosePolicy
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${LambdaIAMRoleName}
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref LambdaPolicy
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${LambdaFunctionName}
+      Role: !Ref LambdaRole
+      Runtime: python3.8
+      Handler: lambda_function.lambda_handler
+      Timeout: 180
+      Environment:
+        Variables:
+          SS_ACCOUNT_NAME: !Sub ${SSACCOUNTNAME}
+          SS_REGION: !Sub ${SSREGION}
+          SS_VPCID: !Sub ${SSVPCID}
+      Code:
+        S3Bucket: !Sub "${S3Bucket}"
+        S3Key: !Sub "${S3ObjectKey}"
+  KinesisFirehoseDeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub ${KinesisFirehoseDeliveryStreamName}
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !Join
+          - ""
+          - - "arn:aws:s3:::"
+            - !Sub ${S3DestinationBucket}
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 50
+        CompressionFormat: UNCOMPRESSED
+        Prefix: !Sub ${S3Prefix}
+        ErrorOutputPrefix: !Sub ${S3ErrorOutputPrefix}
+        RoleARN: !GetAtt KinesisFirehoseRole.Arn
+        ProcessingConfiguration:
+          Enabled: true
+          Processors:
+            - Parameters:
+                - ParameterName: LambdaArn
+                - ParameterValue: !GetAtt LambdaFunction.Arn
+              Type: Lambda

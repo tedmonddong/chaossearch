@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CHAOSSEARCH Kinesis Firehose Delivery Stream Template
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - 
+        Label:
+          default: "AWS Acccount Information"
+        Parameters:
+          - AWSAccountID
+          - AWSRegion
+      - 
+        Label: 
+          default: "Resource Names"
+        Parameters:
+          - KinesisFirehoseDeliveryStreamName
+          - KinesisFirehoseIAMRoleARN
+      -
+        Label:
+          default: "Other Information"
+        Parameters:
+          - S3DestinationBucket
+          - S3Prefix
+          - S3ErrorOutputPrefix
+    ParameterLabels:
+      AWSAccountID:
+        default: "The AWS Account ID"
+      AWSRegion:
+        default: "The AWS Region"
+      KinesisFirehoseDeliveryStreamName:
+        default: "The Kinesis Firehose Delivery Stream name"
+      KinesisFirehoseIAMRoleARN: 
+        default: "The Kinesis Firehose IAM Role ARN (existing)"
+      S3DestinationBucket:
+        default: "The s3 bucket"
+      S3Prefix:
+        default: "The s3 bucket prefix"
+      S3ErrorOutputPrefix:
+        default: "The s3 bucket error output prefix"
+Parameters:
+  AWSAccountID:
+    Description: "Your AWS Account ID"
+    Type: String
+  AWSRegion:
+    Description: "The AWS Region"
+    Type: String
+  KinesisFirehoseDeliveryStreamName:
+    Description: "What name do you want to give for the Kinesis Firehose Delivery Stream?"
+    Type: String
+  KinesisFirehoseIAMRoleARN:
+    Description: "What is the ARN of the Kinesis Firehose IAM Role?"
+    Type: String
+  S3DestinationBucket:
+    Description: "What is the destination s3 bucket for the firehose?"
+    Type: String
+  S3Prefix:
+    Description: "What is the s3 bucket prefix?"
+    Type: String
+  S3ErrorOutputPrefix:
+    Description: "What is the s3 bucket error output prefix?"
+    Type: String
+Resources:
+  KinesisFirehoseDeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub ${KinesisFirehoseDeliveryStreamName}
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !Join 
+          - ''
+          - - 'arn:aws:s3:::'
+            - !Sub ${S3DestinationBucket}
+        Prefix: !Sub ${S3Prefix}
+        ErrorOutputPrefix: !Sub ${S3ErrorOutputPrefix}
+        RoleARN: !Ref KinesisFirehoseIAMRoleARN
+Outputs:
+  KinesisFirehoseDeliveryStreamARN:
+    Description: The ARN of the new kinesis firehose delivery stream
+    Value:
+      Fn::GetAtt:
+      - KinesisFirehoseDeliveryStream
+      - Arn

@@ -1,0 +1,219 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CHAOSSEARCH SQS Template
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: CHAOSSEARCH Authentication
+        Parameters:
+          - CSExternalID
+      - Label:
+          Default: ChaosSearch Role Name
+        Parameters:
+          - CHAOSSEARCHRoleName
+      - Label:
+          Default: ChaosSearch Role Arn
+        Parameters:
+          - CHAOSSEARCHRoleArn
+      - Label:
+          Default: Policy Prefix
+        Parameters:
+          - CHAOSSEARCHSQSPolicyNamePrefix
+    ParameterLabels:
+      CSExternalID:
+        default: What is your provided CHAOSSEARCH External ID?
+      CHAOSSEARCHRoleName:
+        default: What is the name of the ChaosSearch Role?
+      CHAOSSEARCHRoleArn:
+        default: What is the ARN of the ChaosSearch Role?
+      CHAOSSEARCHSQSPolicyNamePrefix:
+        default: What prefix name do you want to give to the inline policy? 
+Parameters:
+  CSExternalID:
+    Description: The provided CHAOSSEARCH External ID
+    Type: String
+  CHAOSSEARCHRoleName:
+    Description: The ChaosSearch IAM Role Name.
+    Type: String
+  CHAOSSEARCHRoleArn:
+    Description: The ChaosSearch IAM Role ARN.
+    Type: String
+  CHAOSSEARCHSQSPolicyNamePrefix:
+    Description: The name of the SQS IAM inline policy
+    Type: String
+Resources:
+  CHAOSSEARCHSQSPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub '${CHAOSSEARCHSQSPolicyNamePrefix}-${CSExternalID}'
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action:
+            - sqs:DeleteMessage
+            - sqs:ReceiveMessage
+            - sqs:GetQueueUrl
+            - sqs:GetQueueAttributes
+          Resource: 
+            - Fn::GetAtt:
+              - LogsQueue1
+              - Arn
+            - Fn::GetAtt:
+              - LogsQueue2
+              - Arn
+        - Effect: Allow
+          Action:
+            - kms:GenerateDataKey
+            - kms:Decrypt
+          Resource:           
+            - Fn::GetAtt:
+              - LogsSQSKMSKey
+              - Arn
+      Roles:
+        - Ref: CHAOSSEARCHRoleName
+  LogsSQSKMSKey:
+    Type: 'AWS::KMS::Key'
+    Properties:
+      Description: KMS Key for logs SQS Queue
+      Enabled: true
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                'Fn::Join':
+                  - ''
+                  - - 'arn:aws:iam::'
+                    - Ref: 'AWS::AccountId'
+                    - ':root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              Service:
+                - s3.amazonaws.com
+            Action:
+              - 'kms:GenerateDataKey'
+              - 'kms:Decrypt'
+              - 'kms:Encrypt'
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              Service:
+                - sqs.amazonaws.com
+            Action:
+              - 'kms:GenerateDataKey'
+              - 'kms:Decrypt'
+            Resource: '*'
+      KeySpec: SYMMETRIC_DEFAULT
+      KeyUsage: ENCRYPT_DECRYPT
+      PendingWindowInDays: 30
+  LogsSQSKMSKeyAlias:
+    Type: 'AWS::KMS::Alias'
+    Properties:
+      AliasName: !Sub alias/logs-sqs-kms-key
+      TargetKeyId: !Ref LogsSQSKMSKey
+    DependsOn: LogsSQSKMSKey
+  LogsQueue1:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: sqs-queue-1
+      VisibilityTimeout: 600
+      KmsMasterKeyId: !Ref LogsSQSKMSKey
+    DependsOn: LogsSQSKMSKey
+  LogsQueue1Policy:
+    Type: 'AWS::SQS::QueuePolicy'
+    Properties:
+      Queues:
+        - !Ref LogsQueue1
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 'sqs:SendMessage'
+            Effect: Allow
+            Resource:
+              - 'Fn::GetAtt':
+                  - LogsQueue1
+                  - Arn
+            Principal:
+              Service:
+                - s3.amazonaws.com
+          - Action:
+              - 'sqs:DeleteMessage'
+              - 'sqs:ReceiveMessage'
+              - 'sqs:GetQueueUrl'
+              - 'sqs:GetQueueAttributes'
+            Effect: Allow
+            Principal: 
+              AWS: 
+                - Ref: CHAOSSEARCHRoleArn
+            Resource:
+              - 'Fn::GetAtt':
+                  - LogsQueue1
+                  - Arn
+    DependsOn: LogsQueue1
+  LogsQueue2:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: sqs-queue-2
+      VisibilityTimeout: 600
+      KmsMasterKeyId: !Ref LogsSQSKMSKey
+    DependsOn: LogsSQSKMSKey
+  LogsQueue2Policy:
+    Type: 'AWS::SQS::QueuePolicy'
+    Properties:
+      Queues:
+        - !Ref LogsQueue2
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 'sqs:SendMessage'
+            Effect: Allow
+            Resource:
+              - 'Fn::GetAtt':
+                  - LogsQueue2
+                  - Arn
+            Principal:
+              Service:
+                - s3.amazonaws.com
+          - Action:
+              - 'sqs:DeleteMessage'
+              - 'sqs:ReceiveMessage'
+              - 'sqs:GetQueueUrl'
+              - 'sqs:GetQueueAttributes'
+            Effect: Allow
+            Principal: 
+              AWS: 
+                - Ref: CHAOSSEARCHRoleArn
+            Resource:
+              - 'Fn::GetAtt':
+                  - LogsQueue2
+                  - Arn
+    DependsOn: LogsQueue2
+Outputs:
+  LogsSQSKMSKeyARN:
+    Description: The ARN of the new SQS KMS key
+    Value:
+      Fn::GetAtt:
+      - LogsSQSKMSKey
+      - Arn
+  LogsQueue1ARN:
+    Description: The ARN of the new SQS Queue 1
+    Value:
+      Fn::GetAtt:
+      - LogsQueue1
+      - Arn
+  LogsQueue2ARN:
+    Description: The ARN of the new SQS Queue 2
+    Value:
+      Fn::GetAtt:
+      - LogsQueue2
+      - Arn
+  SQSPolicyName:
+    Description: The name of the inline policy attached to the role
+    Value: !Sub '${CHAOSSEARCHSQSPolicyNamePrefix}-${CSExternalID}'
+
+
