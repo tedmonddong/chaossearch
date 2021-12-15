@@ -60,12 +60,12 @@ The response from the api call will be logged in the chaos-api.log file.
 ```commandline
 python main.py --action list --type object-group --keys my-object-group
 ```
-####Multiple object groups / views
+#### Multiple object groups / views
 You can pass in a comma separated list of multiple object groups or views to execute the `/V1` api 
 ```commandline
 python main.py --action list --type object-group --keys my-object-group-1,my-object-group-2,my-object-group-3
 ```
-####Test environment
+#### Test environment
 You can point to a different `.env` file by using the `--environment` parameter. This example will look for the `.env.test` file
 ```commandline
 python main.py --env test --action list --type object-group --keys my-object-group-1
