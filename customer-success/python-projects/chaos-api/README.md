@@ -20,14 +20,16 @@ The following parameters are available:
 | Parameter | Required? | Description |
 |-----------|-----------|-------------|
 | host | Yes | The name of the host |
-| accesskey | Yes | The ChaosSearch API access key |
-| secretkey | Yes | The ChaosSearch API secret key |
-| region | Yes | The AWS region |
-| action | No | The action to take. Options are: `list`, `update`, `delete` |
-| type | No | The type of object. Options are: `object-group`, `view` |
-| key | Yes | The name of the object to take action on |
+| access_key | Yes | The ChaosSearch API access key |
+| secret_key | Yes | The ChaosSearch API secret key |
+| object_group_region | Yes | The AWS region where object groups are stored|
+| view_region | Yes | The AWS region where views are stored |
+| action | No | The action to take. Options are: `list`, `update`, `delete`, `create` |
+| type | Yes | The type of object. Options are: `object-group`, `view` |
+| keys | Yes | Comma separated list of object groups or views |
 | name | No | The new name for the view |
 | sources | No | A comma separated list of object groups for the updated view |
+| payload | No | JSON payload of object group or view to create |
 | force | No | Option to recursively delete indexes when deleting an object group |
 
 ## Examples
@@ -37,7 +39,7 @@ The following parameters are available:
 The response from the api call will be logged in the chaos-api.log file.
 
 ```
-python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <redacted> --region us-east-1 --action list --key my-object-group
+python main.py --host lab.chaossearch.io --access_key <redacted> --secret_key <redacted> --object_group_region us-east-1 --view_region us-east-1 --action list --keys my-object-group
 ```
 
 ### Delete an object group
@@ -45,7 +47,7 @@ python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <red
 If the object group contains indexes those will be deleted recursively if the `--force` flag is used. Additionally, if the object group is used in any view(s), those views will be modified to remove reference to the objedt group being deleted or will be deleted if the object group is the only one in the view.
 
 ```
-python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <redacted> --region us-east-1 --action delete --type object-group --key my-object-group --force
+python main.py --host lab.chaossearch.io --access_key <redacted> --secret_key <redacted> --object_group_region us-east-1 --view_region us-east-1 --action delete --type object-group --keys my-object-group --force
 ```
 
 ### Delete a view
@@ -53,29 +55,29 @@ python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <red
 If the view being deleted is referenced in any visualization or saved search then this api call will fail. As a workaround, visualizations and saved searches need to be modified to temporarily point to a different or dummy view.
 
 ```
-python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <redacted> --region us-east-1 --action delete --type view --key my-view
+python main.py --host lab.chaossearch.io --access_key <redacted> --secret_key <redacted> --object_group_region us-east-1 --view_region us-east-1 --action delete --type view --keys my-view
 ```
 
 ### Modify a view and change its sources (object groups)
 
-The list of sources (object groups) are passed in as a comma separated list.
+The new list of sources (object groups) are passed in as a comma separated list via the `sources` parameter. If the view being modified is referenced in any visualization or saved search then this api call will fail. As a workaround, visualizations and saved searches need to be modified to temporarily point to a different or dummy view. This is because the original view is not actually renamed but rather a new view is created and the old view is deleted.
 
 ```
-python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <redacted> --region us-east-1 --action update --type view --key my-view --sources "object-group-1, object-group-2"
+python main.py --host lab.chaossearch.io --access_key <redacted> --secret_key <redacted> --object_group_region us-east-1 --view_region us-east-1 --action update --type view --keys my-view --sources "object-group-1,object-group-2"
 ```
 
 ### Modify a view and change its name
 
-If the view being modified is referenced in any visualization or saved search then this api call will fail. As a workaround, visualizations and saved searches need to be modified to temporarily point to a different or dummy view. This is because the original view is not actually renamed but rather a new view is created and the old view is deleted.
+The new name is passed in via the `name` parameter. If the view being modified is referenced in any visualization or saved search then this api call will fail. As a workaround, visualizations and saved searches need to be modified to temporarily point to a different or dummy view. This is because the original view is not actually renamed but rather a new view is created and the old view is deleted.
 
 ```
-python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <redacted> --region us-east-1 --action update --type view --key my-view --name my-new-name-view
+python main.py --host lab.chaossearch.io --access_key <redacted> --secret_key <redacted> --object_group_region us-east-1 --view_region us-east-1 --action update --type view --keys my-view --name my-new-name-view
 ```
 
 ### Modify a view and change its name and its sources (object groups)
 
-If the view being modified is referenced in any visualization or saved search then this api call will fail. As a workaround, visualizations and saved searches need to be modified to temporarily point to a different or dummy view. This is because the original view is not actually renamed but rather a new view is created and the old view is deleted.
+The new list of sources (object groups) are passed in as a comma separated list via the `sources` parameter and the new name is passed in via the `name` parameter. If the view being modified is referenced in any visualization or saved search then this api call will fail. As a workaround, visualizations and saved searches need to be modified to temporarily point to a different or dummy view. This is because the original view is not actually renamed but rather a new view is created and the old view is deleted.
 
 ```
-python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <redacted> --region us-east-1 --action update --type view --key my-view --name my-new-name-view --sources "object-group-1, object-group-2"
+python main.py --host lab.chaossearch.io --accesskey <redacted> --secretkey <redacted> --object_group_region us-east-1 --view_region us-east-1 --action update --type view --keys my-view --name my-new-name-view --sources "object-group-1,object-group-2"
 ```
